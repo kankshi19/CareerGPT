@@ -1,0 +1,15 @@
+{
+  "train_accuracy": 1.0,
+  "train_roc_auc": 1.0,
+  "features": [
+    "preferred_role_match",
+    "interests_description_similarity",
+    "major_description_similarity",
+    "skills_overlap_ratio",
+    "skills_average_level",
+    "skills_gap_score",
+    "experience_match_score"
+  ],
+  "train_samples": 6336,
+  "date": "2026-06-14"
+}

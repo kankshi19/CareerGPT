@@ -1,0 +1,16 @@
+{
+  "skills": [
+    { "name": "Python", "category": "Programming", "domain": "Data" },
+    { "name": "SQL", "category": "Data", "domain": "Data" },
+    { "name": "React", "category": "Frontend", "domain": "Web" },
+    { "name": "Machine Learning", "category": "AI", "domain": "AI" }
+  ],
+  "roles": [
+    { "name": "Data Analyst", "domain": "Data", "level": "Entry" },
+    { "name": "Software Engineer", "domain": "Software", "level": "Entry" }
+  ],
+  "projects": [
+    { "title": "SQL Dashboard", "domain": "Data", "difficulty": "Beginner" },
+    { "title": "Portfolio Site", "domain": "Web", "difficulty": "Beginner" }
+  ]
+}

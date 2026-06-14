@@ -1,0 +1,61 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# Environment files (secrets)
+.env
+.env.*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor directories
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+
+# Databases
+*.sqlite
+*.db
+
+# Large data and processed datasets (exclude raw/processed large files)
+/data/raw/
+/data/processed/
+
+# Machine learning models and artifacts
+ml/models/*.joblib
+ml/models/*.pkl
+ml/models/*.sav
+ml/models/*.h5
+ml/models/*.onnx
+
+# Archives and large binaries
+*.tar.gz
+*.tgz
+*.zip
+*.rar
+*.7z
+*.bin
+
+# Coverage / build artifacts
+coverage/
+coverage.*

@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum RecommendationType {
+  SKILL
+  PROJECT
+  CERTIFICATION
+  RESOURCE
+  INTERNSHIP
+  ROADMAP
+}
+
+model User {
+  id        String          @id @default(cuid())
+  name      String?
+  email     String          @unique
+  password  String
+  role      UserRole        @default(STUDENT)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  profile   StudentProfile?
+}
+
+model StudentProfile {
+  id                     String                   @id @default(cuid())
+  userId                 String                   @unique
+  fullName               String?
+  educationLevel         String
+  major                  String
+  interests              String
+  preferredRoles         String
+  weeklyLearningHours    Int
+  experienceLevel        String
+  preferredLearningStyle String
+  targetRoleId           String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  user                   User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetRole             CareerRole?              @relation(fields: [targetRoleId], references: [id], onDelete: SetNull)
+  currentSkills          UserSkill[]
+  roadmapSnapshots       Roadmap[]
+  RecommendationFeedback RecommendationFeedback[]
+}
+
+model Skill {
+  id               String                 @id @default(cuid())
+  name             String                 @unique
+  slug             String                 @unique
+  category         String
+  source           String                 @default("seed")
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  userSkills       UserSkill[]
+  roleRequirements RoleSkillRequirement[]
+}
+
+model UserSkill {
+  id        String         @id @default(cuid())
+  profileId String
+  skillId   String
+  level     Int
+  source    String         @default("onboarding")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  profile   StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill     Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, skillId])
+}
+
+model CareerRole {
+  id                String                 @id @default(cuid())
+  slug              String                 @unique
+  name              String                 @unique
+  description       String
+  onetSocCode       String?
+  source            String                 @default("seed")
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  skillRequirements RoleSkillRequirement[]
+  certifications    RoleCertification[]
+  technologies      RoleTechnology[]
+  targetProfiles    StudentProfile[]
+  roadmaps          Roadmap[]
+}
+
+model RoleSkillRequirement {
+  id              String     @id @default(cuid())
+  roleId          String
+  skillId         String
+  importanceScore Int
+  requirementType String
+  source          String     @default("seed")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  role            CareerRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill           Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, skillId])
+}
+
+model RoleCertification {
+  id              String        @id @default(cuid())
+  roleId          String
+  certificationId String
+  relevanceScore  Int
+  source          String        @default("seed")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  role            CareerRole    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, certificationId])
+}
+
+model Certification {
+  id        String              @id @default(cuid())
+  slug      String              @unique
+  name      String
+  issuer    String?
+  source    String              @default("seed")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  roleLinks RoleCertification[]
+}
+
+model Technology {
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  name            String           @unique
+  commodityCode   String?
+  commodityTitle  String?
+  isHotTechnology Boolean          @default(false)
+  source          String           @default("onet")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  roleLinks       RoleTechnology[]
+}
+
+model RoleTechnology {
+  id           String     @id @default(cuid())
+  roleId       String
+  technologyId String
+  onetSocCode  String?
+  source       String     @default("onet")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  role         CareerRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, technologyId])
+}
+
+model Roadmap {
+  id             String         @id @default(cuid())
+  profileId      String
+  roleId         String
+  title          String
+  summary        String
+  missingSkills  String
+  generatedSteps String
+  status         String         @default("active")
+  sourcePayload  String
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  profile        StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  role           CareerRole     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  steps          RoadmapStep[]
+}
+
+model RoadmapStep {
+  id           String   @id @default(cuid())
+  roadmapId    String
+  title        String
+  description  String
+  duration     String
+  skillFocus   String
+  resourceLink String?
+  completed    Boolean  @default(false)
+  sortOrder    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  roadmap      Roadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+}
+
+model RecommendationFeedback {
+  id         String         @id @default(cuid())
+  profileId  String
+  entityType String
+  entityId   String
+  rating     Int
+  note       String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  profile    StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
